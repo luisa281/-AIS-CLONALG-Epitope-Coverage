@@ -127,4 +127,16 @@ Interpretación: El algoritmo demostró alta eficiencia al identificar un subcon
 
 Significado Biológico: Esto simula la capacidad del sistema inmune de reconocer patógenos con un número limitado de anticuerpos
 
-El análisis de los resultados obtenidos mediante la implementación del algoritmo CLONALG muestra un desempeño con matices significativos. Desde una perspectiva computacional, el algoritmo demostró una eficiencia notable en la optimización de recursos, seleccionando únicamente 4.96 péptidos de los 591 disponibles (0.84% de utilización). La reproducibilidad robusta, con una variabilidad mínima del fitness (23.07 ± 0.47) across múltiples semillas, confirma la estabilidad del enfoque y su adecuación para aplicaciones que requieren consistencia en resultados. Sin embargo, el análisis espacial de la cobertura revela una limitación: la concentración del 100% de los péptidos seleccionados en el segmento inicial del antígeno (posiciones 0-120), generando una brecha de 576 aminoácidos sin cobertura (96% del antígeno), lo que sugiere un desbalance en la exploración del espacio de soluciones y posiblemente una penalización excesiva en la función fitness que inhibe la diversificación regional. Biológicamente, si bien el manejo de solapamientos fue efectivo (solo 6 posiciones con redundancia), la cobertura global del 4% resulta insuficiente para una respuesta inmune comprehensiva, indicando que la optimización puramente geométrica, no captura la complejidad immunológica requerida para aplicaciones prácticas en diseño de vacunas. En conclusión, mientras el algoritmo establece un marco sólido para problemas de optimización combinatoria, su transferencia a dominios biológicos reales necesitaría incorporar capas adicionales de información estructural y funcional del antígeno para alcanzar relevancia traslacional.
+El análisis de los resultados obtenidos mediante la implementación del algoritmo CLONALG muestra un desempeño con matices significativos.
+Desde una perspectiva computacional, el algoritmo demostró una eficiencia notable en la optimización de recursos, seleccionando únicamente
+ 4.96 péptidos de los 591 disponibles (0.84% de utilización).
+ La reproducibilidad robusta, con una variabilidad mínima del fitness (23.07 ± 0.47) across múltiples semillas, confirma la estabilidad del
+enfoque y su adecuación para aplicaciones que requieren consistencia en resultados. Sin embargo, el análisis espacial de la cobertura revela
+una limitación: la concentración del 100% de los péptidos seleccionados en el segmento inicial del antígeno (posiciones 0-120), generando una
+ brecha de 576 aminoácidos sin cobertura (96% del antígeno), lo que sugiere un desbalance en la exploración del espacio de soluciones y
+ posiblemente una penalización excesiva en la función fitness que inhibe la diversificación regional. Biológicamente, si bien el manejo de
+ solapamientos fue efectivo (solo 6 posiciones con redundancia), la cobertura global del 4% resulta insuficiente para una respuesta inmune
+ comprehensiva, indicando que la optimización puramente geométrica, no captura la complejidad immunológica requerida para aplicaciones prácticas
+ en diseño de vacunas. En conclusión, mientras el algoritmo establece un marco sólido para problemas de optimización combinatoria, su transferencia
+ a dominios biológicos reales necesitaría incorporar capas adicionales de información estructural y funcional del antígeno para alcanzar relevancia
+traslacional.
