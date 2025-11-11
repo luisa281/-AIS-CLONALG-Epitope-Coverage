@@ -1,3 +1,7 @@
+src/clonalg.py: Implementación del algoritmo CLONALG (Clonal Selection Algorithm) que optimiza la 
+selección de péptidos para maximizar la cobertura del antígeno mientras minimiza solapamientos redundantes. 
+Incluye funciones para cálculo de fitness, evolución de soluciones y generación de visualizaciones.
+
 src/.gitkeep
 import numpy as np
 import matplotlib.pyplot as plt
