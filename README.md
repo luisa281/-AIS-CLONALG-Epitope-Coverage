@@ -60,7 +60,8 @@ def fitness(x, seq=antigen_seq, k=10, gamma=0.1):
     - Eficiencia en la selección de péptidos
     """
     return score_final
-		
+		# Función fitness 
+
 # Flujo de Trabajo
 Carga de Datos: Antígeno de 600 aminoácidos desde archivo FASTA
 Generación de Péptidos: 591 péptidos posibles de longitud k=8
@@ -74,14 +75,7 @@ Semilla 42: Fitness = 23.40
 Semilla 123: Fitness = 23.40
 Media del fitness: 23.07 ± 0.47
 
-# Función fitness 
-def fitness(x, seq=antigen_seq, k=10, gamma=0.1):
-    """
-    Función objetivo que balancea:
-    - Maximizar cobertura de epítopos
-    - Minimizar solapamientos redundantes
-    - Optimizar número de péptidos utilizados
-    """
+
 # Resultados visuales 
 <img width="455" height="269" alt="image" src="https://github.com/user-attachments/assets/126d41dc-ee04-4725-883c-20a1768fad4c" />
 <img width="776" height="336" alt="image" src="https://github.com/user-attachments/assets/9c15ba0b-f959-435f-bf47-30f22215371f" />
