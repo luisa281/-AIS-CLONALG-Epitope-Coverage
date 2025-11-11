@@ -1,1 +1,86 @@
 colab/.gitkeep
+notebook codigo AIS-CLONALG
+https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing
+
+
+# Importaciones y configuracion
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+import os
+
+sys.path.append('../src')
+
+plt.style.use('default')
+plt.rcParams['figure.figsize'] = (10, 6)
+plt.rcParams['font.size'] = 12
+
+#  Configuracion reproducible
+SEED = 6
+print(f"Configuracion reproducible - Semilla: {SEED}")
+
+#  Cargar implementacion
+from clonalg import (
+    clonalg_algorithm, 
+    analyze_solution, 
+    plot_results, 
+    read_fasta,
+    save_metrics,
+    run_reproducibility_test
+)
+
+# Cargar datos del antigeno
+antigen_seq = read_fasta('../data/antigen.fasta')
+print("DATOS DEL ANTIGENO:")
+print(f"Longitud: {len(antigen_seq)} aminoacidos")
+print(f"Peptidos posibles (k=10): {len(antigen_seq) - 9}")
+
+from collections import Counter
+composition = Counter(antigen_seq)
+print(f"Composicion aminoacidica: {dict(composition)}")
+
+#  Ejecucion principal
+print("Ejecutando algoritmo CLONALG...")
+best_solution, best_fitness, fitness_history = clonalg_algorithm(seed=SEED)
+
+print("EJECUCION COMPLETADA")
+print(f"Mejor fitness: {best_fitness:.2f}")
+print(f"Tamaño del historial: {len(fitness_history)} iteraciones")
+
+#  Analisis detallado
+coverage, eff_peptides, unique_cov = analyze_solution(best_solution)
+
+#  Generacion de graficas
+print("Generando graficas de resultados...")
+plot_results(fitness_history, coverage, best_solution)
+
+# Pruebas de reproducibilidad
+reproducibility_results = run_reproducibility_test(seeds=[6, 42, 123])
+
+#  Guardado de metricas
+save_metrics(best_fitness, eff_peptides, unique_cov, np.sum(coverage), reproducibility_results)
+
+#  Analisis comparativo
+print("ANALISIS COMPARATIVO")
+rng = np.random.default_rng(SEED)
+random_solution = rng.uniform(0, 1, 15)
+random_score, random_uniq, random_total, random_pep, _ = fitness(random_solution)
+
+print("CLONALG vs Solucion Aleatoria:")
+print(f"CLONALG - Fitness: {best_fitness:.2f}, Cobertura: {unique_cov}/600")
+print(f"Aleatoria - Fitness: {random_score:.2f}, Cobertura: {random_uniq}/600")
+print(f"Mejora relativa: {(best_fitness/random_score-1)*100:+.1f}%")
+
+# Resumen ejecutivo
+print("="*50)
+print("RESUMEN EJECUTIVO DEL PROYECTO")
+print("="*50)
+print(f"Algoritmo: CLONALG para Cobertura Optima de Epitopos")
+print(f"Antigeno analizado: 600 aminoacidos, 591 peptidos posibles")
+print(f"Configuracion: 150 iteraciones, semilla {SEED}")
+print(f"Resultados principales:")
+print(f"  - Fitness final: {best_fitness:.2f}")
+print(f"  - Cobertura unica: {unique_cov}/600 posiciones ({unique_cov/600*100:.1f}%)")
+print(f"  - Peptidos seleccionados: {eff_peptides:.1f}")
+print(f"  - Reproducibilidad: {reproducibility_results.mean():.2f} ± {reproducibility_results.std():.2f}")
+print("PROYECTO COMPLETADO EXITOSAMENTE")

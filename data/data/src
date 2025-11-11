@@ -1,1 +1,237 @@
 src/.gitkeep
+import numpy as np
+import matplotlib.pyplot as plt
+import json
+import os
+
+def read_fasta(file_path):
+    """Lee archivo FASTA y devuelve la secuencia"""
+    try:
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+        
+        sequence = ''.join(line.strip() for line in lines if not line.startswith('>'))
+        return sequence
+    except FileNotFoundError:
+        print(f"Error: No se encontro el archivo {file_path}")
+        return None
+
+def fitness(x, antigen_length=600, k=10, gamma=0.1):
+    """
+    Funcion de fitness para cobertura de epitopos
+    
+    Args:
+        x: vector de solucion (15 dimensiones)
+        antigen_length: longitud del antigeno
+        k: longitud de peptidos
+        gamma: factor de penalizacion por solapamientos
+    
+    Returns:
+        tuple: (score, unique_coverage, total_coverage, effective_peptides, coverage_array)
+    """
+    # Convertir el vector de solucion en posiciones de peptidos
+    positions = (x * (antigen_length - k)).astype(int)
+    
+    # Calcular cobertura
+    coverage = np.zeros(antigen_length)
+    for pos in positions:
+        if 0 <= pos <= antigen_length - k:
+            coverage[pos:pos+k] += 1
+    
+    # Metricas de cobertura
+    unique_coverage = np.sum(coverage >= 1)
+    total_coverage = np.sum(coverage)
+    overlap = total_coverage - unique_coverage
+    
+    # Numero efectivo de peptidos seleccionados
+    effective_peptides = np.sum(x > 0.1)
+    
+    # Calculo del fitness
+    score = unique_coverage - gamma * overlap
+    
+    return score, unique_coverage, total_coverage, effective_peptides, coverage
+
+def clonalg_algorithm(D=15, N=40, beta=2, d_rate=0.1, generations=150, seed=6):
+    """
+    Implementacion del algoritmo CLONALG para cobertura de epitopos
+    
+    Args:
+        D: dimension del problema
+        N: tamaño de poblacion
+        beta: factor de clonacion
+        d_rate: tasa de diversificacion
+        generations: numero de generaciones
+        seed: semilla para reproducibilidad
+    
+    Returns:
+        tuple: (best_solution, best_fitness, fitness_history)
+    """
+    rng = np.random.default_rng(seed)
+    
+    # Inicializar poblacion
+    population = rng.uniform(0, 1, (N, D))
+    best_solution = None
+    best_fitness = -np.inf
+    fitness_history = []
+    
+    for gen in range(generations):
+        # Evaluar fitness
+        fitness_scores = []
+        for individual in population:
+            score, _, _, _, _ = fitness(individual)
+            fitness_scores.append(score)
+        
+        fitness_scores = np.array(fitness_scores)
+        
+        # Actualizar mejor solucion
+        current_best_idx = np.argmax(fitness_scores)
+        current_best_fitness = fitness_scores[current_best_idx]
+        
+        if current_best_fitness > best_fitness:
+            best_fitness = current_best_fitness
+            best_solution = population[current_best_idx].copy()
+        
+        fitness_history.append(best_fitness)
+        
+        # Seleccion y clonacion
+        sorted_indices = np.argsort(fitness_scores)[::-1]
+        elites = population[sorted_indices[:N//5]]
+        
+        clones = []
+        for i, elite in enumerate(elites):
+            n_clones = int(beta * (N//5 - i)) + 1
+            for _ in range(n_clones):
+                mutation_rate = 1.0 / (fitness_scores[sorted_indices[i]] + 1e-9)
+                clone = elite + rng.normal(0, mutation_rate, size=D)
+                clone = np.clip(clone, 0, 1)
+                clones.append(clone)
+        
+        # Nueva poblacion
+        new_population = np.vstack([population, np.array(clones)])
+        new_fitness = np.array([fitness(ind)[0] for ind in new_population])
+        best_indices = np.argsort(new_fitness)[::-1][:N]
+        population = new_population[best_indices]
+        
+        # Diversificacion
+        n_new = int(d_rate * N)
+        population[-n_new:] = rng.uniform(0, 1, (n_new, D))
+    
+    return best_solution, best_fitness, np.array(fitness_history)
+
+def analyze_solution(best_solution, antigen_length=600, k=10):
+    """
+    Analisis detallado de la mejor solucion encontrada
+    """
+    score, unique_cov, total_cov, eff_peptides, coverage = fitness(best_solution, antigen_length, k)
+    
+    print("ANALISIS DETALLADO DE LA MEJOR SOLUCION")
+    print("========================================")
+    print(f"Fitness final: {score:.4f}")
+    print(f"Peptidos seleccionados: {eff_peptides:.2f}")
+    print(f"Cobertura unica: {unique_cov}/{antigen_length} posiciones ({unique_cov/antigen_length*100:.2f}%)")
+    print(f"Cobertura total (con solapamientos): {total_cov:.1f}")
+    print(f"Posiciones con solapamiento: {total_cov - unique_cov:.0f}")
+    print(f"Eficiencia de cobertura: {unique_cov/(eff_peptides * k):.4f}")
+    
+    return coverage, eff_peptides, unique_cov
+
+def plot_results(fitness_history, coverage, best_solution, antigen_length=600):
+    """
+    Genera todas las graficas de resultados
+    """
+    # Crear directorio si no existe
+    os.makedirs('resultados/graficas', exist_ok=True)
+    
+    # Grafica 1: Curva de convergencia
+    plt.figure(figsize=(10, 6))
+    plt.plot(fitness_history, linewidth=2, color='blue')
+    plt.title('Curva de Convergencia - Algoritmo CLONALG', fontsize=14, fontweight='bold')
+    plt.xlabel('Iteracion')
+    plt.ylabel('Fitness')
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig('resultados/graficas/convergencia.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    # Grafica 2: Cobertura del antigeno
+    plt.figure(figsize=(12, 4))
+    plt.plot(coverage, alpha=0.7, color='green')
+    plt.fill_between(range(len(coverage)), coverage, alpha=0.3, color='lightgreen')
+    plt.title('Cobertura del Antigeno por Peptidos Seleccionados', fontsize=14, fontweight='bold')
+    plt.xlabel('Posicion en el antigeno')
+    plt.ylabel('Numero de peptidos cubriendo')
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig('resultados/graficas/cobertura_antigeno.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    # Grafica 3: Distribucion de peptidos
+    plt.figure(figsize=(10, 6))
+    positions = (best_solution * (antigen_length - 10)).astype(int)
+    valid_positions = positions[positions <= antigen_length - 10]
+    
+    plt.scatter(valid_positions, np.ones_like(valid_positions), s=100, alpha=0.6, color='red')
+    plt.title('Distribucion Espacial de Peptidos Seleccionados', fontsize=14, fontweight='bold')
+    plt.xlabel('Posicion de inicio en el antigeno')
+    plt.ylabel('Peptidos seleccionados')
+    plt.yticks([1], ['Peptidos'])
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig('resultados/graficas/distribucion_peptidos.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    print("Graficas generadas y guardadas en 'resultados/graficas/'")
+
+def save_metrics(best_fitness, eff_peptides, unique_cov, total_cov, reproducibility_results):
+    """
+    Guarda las metricas en formato JSON
+    """
+    os.makedirs('resultados/metricas', exist_ok=True)
+    
+    metrics = {
+        'mejor_fitness': float(best_fitness),
+        'peptidos_seleccionados': float(eff_peptides),
+        'cobertura_unica': int(unique_cov),
+        'cobertura_total': float(total_cov),
+        'porcentaje_cobertura': float(unique_cov/600 * 100),
+        'reproducibilidad': {
+            'media': float(np.mean(reproducibility_results)),
+            'desviacion_estandar': float(np.std(reproducibility_results)),
+            'mejor_fitness_global': float(np.max(reproducibility_results)),
+            'peor_fitness_global': float(np.min(reproducibility_results))
+        },
+        'parametros_algoritmo': {
+            'dimension': 15,
+            'poblacion': 40,
+            'generaciones': 150,
+            'factor_clonacion': 2,
+            'tasa_diversificacion': 0.1,
+            'semilla_principal': 6
+        }
+    }
+    
+    with open('resultados/metricas/resultados_detallados.json', 'w', encoding='utf-8') as f:
+        json.dump(metrics, f, indent=2, ensure_ascii=False)
+    
+    print("Metricas guardadas en 'resultados/metricas/resultados_detallados.json'")
+
+def run_reproducibility_test(seeds=[6, 42, 123]):
+    """
+    Ejecuta pruebas de reproducibilidad con diferentes semillas
+    """
+    print("EVALUACION DE REPRODUCIBILIDAD")
+    print("==============================")
+    fitness_results = []
+    
+    for seed in seeds:
+        solution, fitness_val, _ = clonalg_algorithm(seed=seed)
+        fitness_results.append(fitness_val)
+        print(f"Semilla {seed}: Fitness = {fitness_val:.2f}")
+    
+    fitness_array = np.array(fitness_results)
+    print("\nRESULTADOS CONSOLIDADOS")
+    print(f"Media del fitness: {fitness_array.mean():.2f} ± {fitness_array.std():.2f}")
+    print(f"Mejor fitness global: {fitness_array.max():.2f}")
+    print(f"Peor fitness global: {fitness_array.min():.2f}")
+    
+    return fitness_array

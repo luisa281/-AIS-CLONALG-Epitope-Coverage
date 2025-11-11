@@ -1,1 +1,31 @@
 docs/.gitkeep
+# Análisis de Limitaciones - CLONALG
+
+## Limitaciones Técnicas Identificadas
+
+### 1. Cobertura Limitada
+- Problema: Solo 4% de cobertura del antígeno
+- Causa: Penalización excesiva por solapamientos
+- Impacto: Respuesta immune potencialmente incompleta
+
+### 2. Distribución Espacial Desbalanceada
+- Problema: 100% de cobertura en segmento 1 (0-120)
+- Causa: Falta de diversificación en exploración
+- Impacto: Regiones críticas sin cobertura
+
+### 3. Fitness Puramente Geométrico
+- Problema: No considera afinidad biológica real
+- Causa: Dataset sintético, no datos experimentales
+- Impacto: Limitada aplicabilidad práctica
+
+## Recomendaciones para Futuras Iteraciones
+
+### Mejoras Inmediatas:
+- Ajustar parámetros de diversificación (d_rate = 0.3)
+- Reducir penalización por solapamientos (gamma = 0.05)
+- Incentivar cobertura de múltiples regiones
+
+### Mejoras a Largo Plazo:
+- Incorporar scores de afinidad experimental
+- Considerar diferentes longitudes de péptidos
+- Validar con datos reales de epítopos
