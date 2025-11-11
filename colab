@@ -2,6 +2,15 @@ colab/.gitkeep
 notebook codigo AIS-CLONALG
 https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing
 
+# Algoritmo CLONALG - Cobertura Óptima de Epítopos
+
+Implementación del algoritmo de selección clonal para optimizar la cobertura de epítopos en antígenos 
+proteicos. El sistema selecciona péptidos que maximizan la cobertura del antígeno mientras minimizan
+solapamientos redundantes, utilizando principios de inmunología artificial. Resultados: Fitness 23.40,
+4.0% de cobertura con 4.96 péptidos seleccionados de 591 posibles. Reproducibilidad verificada con
+3 semillas diferentes (23.07 ± 0.47). 
+Ejecución completa en un solo clic.
+
 
 # PARA TENER EN CUENTA 
 #Para correr el codigo en google colaB Selecionar el icono de ejecutar todo luego si sale un error en algunas de las celdas ejecutar en orden cada una de las celdas.
