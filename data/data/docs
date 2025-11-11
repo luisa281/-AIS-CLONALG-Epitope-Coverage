@@ -1,4 +1,19 @@
 docs/.gitkeep
+# Documentación Técnica - Algoritmo CLONALG
+Implementación del algoritmo de selección clonal (CLONALG) para optimización de cobertura de epítopos en antígenos proteicos. El sistema aborda el problema de selección óptima de péptidos mediante principios de inmunología artificial, balanceando cobertura máxima con minimización de solapamientos redundantes. Resultados principales: fitness 23.40, cobertura del 4.0% (24/600 posiciones) utilizando 4.96 péptidos de 591 posibles. La implementación garantiza reproducibilidad (23.07 ± 0.47 across 3 semillas) y está diseñada para extensión futura con datos biológicos experimentales.
+
+## Metodología
+
+- **Algoritmo:** CLONALG con operadores de selección, clonación y mutación inversamente proporcional a la afinidad
+- **Función de Fitness:** Maximiza cobertura única penalizando solapamientos (gamma=0.1)
+- **Dataset:** Antígeno sintético de 600 aminoácidos en formato FASTA
+- **Parámetros:** 150 generaciones, población de 40 individuos, dimensión 15
+- **Validación:** Pruebas de reproducibilidad con semillas 6, 42 y 123
+
+## Arquitectura del Sistema
+
+El proyecto sigue una estructura modular con separación clara entre datos, implementación algorítmica y análisis. La implementación en Python utiliza NumPy para computación numérica y Matplotlib para visualización, garantizando reproducibilidad mediante semillas controladas y documentación exhaustiva de parámetros y resultados.
+
 # Análisis de Limitaciones - CLONALG
 
 ## Limitaciones Técnicas Identificadas
