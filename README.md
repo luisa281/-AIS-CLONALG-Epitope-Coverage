@@ -26,7 +26,7 @@ jupyter notebook notebooks/analisis_clonalg.ipynb
 # Ejecución alternativa como script
 python -c "import sys; sys.path.append('src'); from clonalg import clonalg_algorithm, analyze_solution; best_sol, best_fit, hist = clonalg_algorithm(); coverage, eff_pep, unique_cov = analyze_solution(best_sol); print(f'Resultados: Fitness={best_fit:.2f}, Péptidos={eff_pep:.2f}, Cobertura={unique_cov}/600')"
 
-# Google Colab: abrir el enlace notebook https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing ejecute todas las celdas en orden, los resultados se  generaran autamaticamente.
+## Google Colab: abrir el enlace notebook https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing ejecute todas las celdas en orden, los resultados se  generaran autamaticamente.##
 
 # Entorno Local
 # https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing
