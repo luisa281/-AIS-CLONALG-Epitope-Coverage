@@ -1,6 +1,6 @@
 colab/.gitkeep
-notebook codigo AIS-CLONALG
-https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing
+notebook codigo AIS-CLONALG: 
+# https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing
 
 # Algoritmo CLONALG - Cobertura Óptima de Epítopos
 
@@ -22,84 +22,134 @@ Ejecución completa en un solo clic.
 #El codigo corre a la perfecci+on puesto que ya esta subidos todos los parametros que necesita para correr.
 
 
-# Importaciones y configuracion
+# ==================== CONFIGURACIÓN INICIAL ====================
+from google.colab import files
+import zipfile
+import os
 import numpy as np
 import matplotlib.pyplot as plt
-import sys
-import os
 
-sys.path.append('../src')
+print("INICIALIZANDO ALGORITMO CLONALG - COBERTURA DE EPÍTOPOS")
 
-plt.style.use('default')
-plt.rcParams['figure.figsize'] = (10, 6)
-plt.rcParams['font.size'] = 12
-
-#  Configuracion reproducible
+# Configuración reproducible
 SEED = 6
-print(f"Configuracion reproducible - Semilla: {SEED}")
-
-#  Cargar implementacion
-from clonalg import (
-    clonalg_algorithm, 
-    analyze_solution, 
-    plot_results, 
-    read_fasta,
-    save_metrics,
-    run_reproducibility_test
-)
-
-# Cargar datos del antigeno
-antigen_seq = read_fasta('../data/antigen.fasta')
-print("DATOS DEL ANTIGENO:")
-print(f"Longitud: {len(antigen_seq)} aminoacidos")
-print(f"Peptidos posibles (k=10): {len(antigen_seq) - 9}")
-
-from collections import Counter
-composition = Counter(antigen_seq)
-print(f"Composicion aminoacidica: {dict(composition)}")
-
-#  Ejecucion principal
-print("Ejecutando algoritmo CLONALG...")
-best_solution, best_fitness, fitness_history = clonalg_algorithm(seed=SEED)
-
-print("EJECUCION COMPLETADA")
-print(f"Mejor fitness: {best_fitness:.2f}")
-print(f"Tamaño del historial: {len(fitness_history)} iteraciones")
-
-#  Analisis detallado
-coverage, eff_peptides, unique_cov = analyze_solution(best_solution)
-
-#  Generacion de graficas
-print("Generando graficas de resultados...")
-plot_results(fitness_history, coverage, best_solution)
-
-# Pruebas de reproducibilidad
-reproducibility_results = run_reproducibility_test(seeds=[6, 42, 123])
-
-#  Guardado de metricas
-save_metrics(best_fitness, eff_peptides, unique_cov, np.sum(coverage), reproducibility_results)
-
-#  Analisis comparativo
-print("ANALISIS COMPARATIVO")
 rng = np.random.default_rng(SEED)
-random_solution = rng.uniform(0, 1, 15)
-random_score, random_uniq, random_total, random_pep, _ = fitness(random_solution)
+print(f"Semilla configurada: {SEED}")
 
-print("CLONALG vs Solucion Aleatoria:")
-print(f"CLONALG - Fitness: {best_fitness:.2f}, Cobertura: {unique_cov}/600")
-print(f"Aleatoria - Fitness: {random_score:.2f}, Cobertura: {random_uniq}/600")
-print(f"Mejora relativa: {(best_fitness/random_score-1)*100:+.1f}%")
+# ==================== DATOS DEL ANTÍGENO ====================
+antigen_seq = """>antigen_1
+KRAKWPAMRCHEYGQACRQSFYIWVLPYGNYTHHAKIYEGIQLCYPHKASMMKGWFTSTPAEEFWQLCTNKWHEPEFCES
+GVFYHFVVYKQHLLTAKYKCYGTYNCMCMINTEHLAYCGGNYARHNRLFFTMDIRWVWFQTLLDWKLQHAPGNMSFCWWE
+GMKVRNWSHLFKCKIKQGPRSWVMFDRYHERSNGYMKIVCHEDDKRNQVNPIVWRFFKSDFMYDERETHCLKMSPTQYQE
+GNYLDTMQMKLWTQQVSAKIPIAENIWTYCHHAWGEWKMDIAIPNLDVSKAINSVQYAEGFNDNHVSSTAFLWKDDFYGK
+NKSCHCKAMGFTTMHIIFMYFLVGPENFDEPFCSSNYDLWAFHGFDLLDVYVTHYIDSIVANDLCCVTGASVIWRSRHSY
+HFHGCQCFMDYSSNGGFGANVWILAYRDLIERITTVQKGEGITLYKWPLCSRDWIMFKPNHAEMWELLAWCNILCPNRHY
+FRNPIICKNDIVMIALCKWWMVCSLDKRKIGPLEPFVCRHYQAYPCQCPPGLLPMDLSISLCTASMMGQLVVEVLQCLEK
+VYSYIWITHDQPIWTASEIPGVDCNGSYCLVDLVEMEVML"""
 
-# Resumen ejecutivo
-print("="*50)
-print("RESUMEN EJECUTIVO DEL PROYECTO")
-print("="*50)
-print(f"Algoritmo: CLONALG para Cobertura Optima de Epitopos")
-print(f"Antigeno analizado: 600 aminoacidos, 591 peptidos posibles")
-print(f"Configuracion: 150 iteraciones, semilla {SEED}")
-print(f"Resultados principales:")
-print(f"  - Fitness final: {best_fitness:.2f}")
-print(f"  - Cobertura unica: {unique_cov}/600 posiciones ({unique_cov/600*100:.1f}%)")
-print(f"  - Peptidos seleccionados: {eff_peptides:.1f}")
-print(f"  - Reproducibilidad: {reproducibility_results.mean():.2f} ± {reproducibility_results.std():.2f}")
-print("PROYECTO COMPLETADO EXITOSAMENTE")
+# Procesar secuencia
+secuencia = "".join([linea.strip().upper() for linea in antigen_seq.split('\n') 
+                    if not linea.startswith('>') and linea.strip()])
+
+print(f"Antígeno cargado: {len(secuencia)} aminoácidos")
+print(f"Composición: {dict(zip(*np.unique(list(secuencia), return_counts=True)))}")
+
+# ==================== ALGORITMO CLONALG ====================
+def fitness(x, seq=secuencia, k=10, gamma=0.1):
+    """Función de fitness para cobertura de epítopos"""
+    selected = (x > 0.5).astype(int)
+    coverage = np.zeros(len(seq))
+    
+    for i in range(len(selected)):
+        if selected[i] == 1:
+            start = i
+            end = min(start + k, len(seq))
+            for j in range(start, end):
+                coverage[j] += 1
+
+    covered_positions = np.sum(coverage > 0)
+    total_coverage = np.sum(coverage)
+    overlapping_penalty = total_coverage - covered_positions
+
+    return covered_positions - gamma * overlapping_penalty
+
+def clonalg_algorithm(D=15, N=40, beta=2, d_rate=0.1, T=150):
+    """Implementación del algoritmo CLONALG"""
+    P = rng.uniform(0, 1, (N, D))
+    hist = []
+
+    for iteration in range(T):
+        fit = np.array([fitness(x) for x in P])
+        idx_sorted = fit.argsort()[::-1]
+        P = P[idx_sorted]
+        fit = fit[idx_sorted]
+
+        n_elites = max(1, N // 5)
+        elites = P[:n_elites]
+        fit_elites = fit[:n_elites]
+
+        f_min = fit_elites.min()
+        f_max = fit_elites.max()
+
+        clones = []
+        for i, elite in enumerate(elites):
+            nclones = max(1, int(beta * (n_elites - i)))
+            for _ in range(nclones):
+                mutation_rate = 0.1 if f_max - f_min < 1e-9 else 0.1 * (1 - (fit_elites[i] - f_min) / (f_max - f_min))
+                clone = elite.copy()
+                mask = rng.random(D) < mutation_rate
+                noise = rng.normal(0, 0.1, D)
+                clone[mask] += noise[mask]
+                clone = np.clip(clone, 0, 1)
+                clones.append(clone)
+
+        if clones:
+            pool = np.vstack([P, np.array(clones)])
+        else:
+            pool = P.copy()
+
+        f_pool = np.array([fitness(x) for x in pool])
+        idx_best = f_pool.argsort()[::-1][:N]
+        P = pool[idx_best]
+
+        n_new = max(1, int(d_rate * N))
+        P[-n_new:] = rng.uniform(0, 1, (n_new, D))
+
+        current_best = np.max([fitness(x) for x in P])
+        hist.append(current_best)
+
+    best_idx = np.argmax([fitness(x) for x in P])
+    return P[best_idx], np.array(hist)
+
+# ==================== EJECUCIÓN PRINCIPAL ====================
+print("Ejecutando algoritmo CLONALG...")
+best_solution, fitness_history = clonalg_algorithm()
+
+print(f"Mejor fitness alcanzado: {fitness_history[-1]:.2f}")
+
+# ==================== VISUALIZACIÓN ====================
+plt.figure(figsize=(10, 6))
+plt.plot(fitness_history, 'b-', linewidth=2)
+plt.title('Evolución del Fitness - Algoritmo CLONALG')
+plt.xlabel('Iteración')
+plt.ylabel('Fitness')
+plt.grid(True, alpha=0.3)
+plt.show()
+
+# ==================== ANÁLISIS DE RESULTADOS ====================
+best_solution_binary = (best_solution > 0.5).astype(int)
+coverage = np.zeros(len(secuencia))
+
+for i in range(len(best_solution_binary)):
+    if best_solution_binary[i] == 1:
+        start = i
+        end = min(i + 10, len(secuencia))
+        for j in range(start, end):
+            coverage[j] += 1
+
+unique_coverage = np.sum(coverage > 0)
+print(f"\nRESULTADOS FINALES:")
+print(f"• Fitness: {fitness_history[-1]:.2f}")
+print(f"• Cobertura única: {unique_coverage}/{len(secuencia)} posiciones ({unique_coverage/len(secuencia)*100:.1f}%)")
+print(f"• Péptidos seleccionados: {np.sum(best_solution_binary)}")
+print(" ANÁLISIS COMPLETADO")
