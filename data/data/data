@@ -9,6 +9,9 @@ HFHGCQCFMDYSSNGGFGANVWILAYRDLIERITTVQKGEGITLYKWPLCSRDWIMFKPNHAEMWELLAWCNILCPNRHY
 FRNPIICKNDIVMIALCKWWMVCSLDKRKIGPLEPFVCRHYQAYPCQCPPGLLPMDLSISLCTASMMGQLVVEVLQCLEK
 VYSYIWITHDQPIWTASEIPGVDCNGSYCLVDLVEMEVML
 
+Data/antigen.fasta: Secuencia proteica de un antígeno de 600 aminoácidos utilizada como dataset 
+para el algoritmo de optimización. Representa la estructura biológica sobre la cual se  evalúa la cobertura de epítopos.
+
 # Implementación del CLONALG en /src/clonalg.py
 import numpy as np
 import matplotlib.pyplot as plt
