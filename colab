@@ -3,6 +3,16 @@ notebook codigo AIS-CLONALG
 https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing
 
 
+# PARA TENER EN CUENTA 
+#Para correr el codigo en google colaB Selecionar el icono de ejecutar todo luego si sale un error en algunas de las celdas ejecutar en orden cada una de las celdas.
+#El archivo esta compartido solo como lector, sin embargo al inicio del codigo esta  Cómo ejecutar este notebook
+#Subir el archivo antigen.fasta a /content/data/ en Google Colab
+#Ejecutar todas las celdas en orden (Runtime → Run all)
+#Los resultados se mostrarán al final con gráficos y estadísticas 
+#sino le funciona mas abajo esta aun subidos el antifasta y puede correrlo normal. 
+#El codigo corre a la perfecci+on puesto que ya esta subidos todos los parametros que necesita para correr.
+
+
 # Importaciones y configuracion
 import numpy as np
 import matplotlib.pyplot as plt
