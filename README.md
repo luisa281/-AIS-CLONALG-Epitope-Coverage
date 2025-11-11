@@ -20,10 +20,10 @@ Implementación del algoritmo de selección clonal (CLONALG) para optimizar la c
 # Instalar dependencias
 pip install numpy matplotlib jupyter
 
-# Ejecutar análisis completo
+## Ejecutar análisis completo
 jupyter notebook notebooks/analisis_clonalg.ipynb
 
-# Ejecución alternativa como script
+## Ejecución alternativa como script
 python -c "import sys; sys.path.append('src'); from clonalg import clonalg_algorithm, analyze_solution; best_sol, best_fit, hist = clonalg_algorithm(); coverage, eff_pep, unique_cov = analyze_solution(best_sol); print(f'Resultados: Fitness={best_fit:.2f}, Péptidos={eff_pep:.2f}, Cobertura={unique_cov}/600')"
 
 ## Google Colab: abrir el enlace notebook https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing ejecute todas las celdas en orden, los resultados se  generaran autamaticamente.##
@@ -118,7 +118,7 @@ Brecha promedio: 576.0 posiciones
 Porcentaje del antígeno en brechas: 96.0%
 Interpretación: El algoritmo demostró alta eficiencia al identificar un subconjunto mínimo de péptidos
 
-# Significado Biológico: Esto simula la capacidad del sistema inmune de reconocer patógenos con un número limitado de anticuerpos
+## Significado Biológico: Esto simula la capacidad del sistema inmune de reconocer patógenos con un número limitado de anticuerpos
 
 2. Reproducibilidad Robusta. Media de fitness = 23.07 ± 0.47 across 3 semillas diferentes. Resultados predecibles y confiables para aplicaciones prácticas
 3. Solapamientos. Solo 6 posiciones con solapamiento, máximo 2 péptidos por posición
