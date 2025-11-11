@@ -2,6 +2,29 @@
 Implementación del algoritmo CLONALG para cobertura de epítopos - Grupo 8
 readme # -AIS-CLONALG-Epitope-Coverage
 Implementación del algoritmo Artificial Immune System (AIS) para optimización y selección de péptidos. Sistema bioinspirado.
+# Algoritmo CLONALG para Cobertura Óptima de Epítopos
+
+Implementación del algoritmo de selección clonal (CLONALG) para optimizar la cobertura de epítopos en antígenos proteicos. El sistema utiliza principios de inmunología artificial para seleccionar un conjunto mínimo de péptidos que maximiza la cobertura del antígeno mientras minimiza solapamientos redundantes.
+
+## Características Principales
+
+- **Algoritmo:** CLONALG (Clonal Selection Algorithm)
+- **Dataset:** Antígeno de 600 aminoácidos en formato FASTA
+- **Objetivo:** Maximizar cobertura de epítopos con mínimo de péptidos
+- **Resultados:** Fitness 23.40, 4.0% de cobertura, 4.96 péptidos seleccionados
+- **Reproducibilidad:** 23.07 ± 0.47 across 3 semillas diferentes
+
+## Instalación y Ejecución
+
+```bash
+# Instalar dependencias
+pip install numpy matplotlib jupyter
+
+# Ejecutar análisis completo
+jupyter notebook notebooks/analisis_clonalg.ipynb
+
+# Ejecución alternativa como script
+python -c "import sys; sys.path.append('src'); from clonalg import clonalg_algorithm, analyze_solution; best_sol, best_fit, hist = clonalg_algorithm(); coverage, eff_pep, unique_cov = analyze_solution(best_sol); print(f'Resultados: Fitness={best_fit:.2f}, Péptidos={eff_pep:.2f}, Cobertura={unique_cov}/600')"
 
 # Google Colab: abrir el enlace notebook https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing ejecute todas las celdas en orden, los resultados se  generaran autamaticamente.
 
