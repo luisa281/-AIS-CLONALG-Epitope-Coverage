@@ -14,13 +14,13 @@ Implementación del algoritmo de selección clonal (CLONALG) para optimizar la c
 - **Resultados:** Fitness 23.40, 4.0% de cobertura, 4.96 péptidos seleccionados
 - **Reproducibilidad:** 23.07 ± 0.47 across 3 semillas diferentes
 
-## Instalación y Ejecución
+##  Ejecución
 
 ```bash
 # Instalar dependencias
 pip install numpy matplotlib jupyter
 
-## Ejecutar análisis completo
+###  Ejecutar análisis completo
 jupyter notebook notebooks/analisis_clonalg.ipynb
 
 ## Ejecución alternativa como script
@@ -28,7 +28,7 @@ python -c "import sys; sys.path.append('src'); from clonalg import clonalg_algor
 
 ## Google Colab: abrir el enlace notebook https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing ejecute todas las celdas en orden, los resultados se  generaran autamaticamente.##
 
-# Entorno Local
+**Características Principales**
 # https://colab.research.google.com/drive/1hrnP5Ca0LAchAWpxhG07m-in_TXm8naS?usp=sharing
 cd Grupo8_AIS_Epitopos
 pip install numpy matplotlib
